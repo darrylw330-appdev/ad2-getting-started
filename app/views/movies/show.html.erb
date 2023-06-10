@@ -1,19 +1,105 @@
-<p id="notice"><%= notice %></p>
+<div>
+  <div>
+    <h1>
+      Movie #<%= @the_movie.id %> details
+    </h1>
 
-<p>
-  <strong>Title:</strong>
-  <%= @movie.title %>
-</p>
+    <div>
+      <div>
+        <a href="/movies">
+          Go back
+        </a>
+      </div>
 
-<p>
-  <strong>Description:</strong>
-  <%= @movie.description %>
-</p>
+      <div>
+        <a href="/movies/<%= @the_movie.id %>" data-method="delete">
+          Delete movie
+        </a>
+      </div>
+    </div>
 
-<p>
-  <strong>Released:</strong>
-  <%= @movie.released %>
-</p>
+    <dl>
+      <dt>
+        Title
+      </dt>
+      <dd>
+        <%= @the_movie.title %>
+      </dd>
 
-<%= link_to 'Edit', edit_movie_path(@movie) %> |
-<%= link_to 'Back', movies_path %>
+      <dt>
+        Description
+      </dt>
+      <dd>
+        <%= @the_movie.description %>
+      </dd>
+
+      <dt>
+        Released
+      </dt>
+      <dd>
+        <%= @the_movie.released %>
+      </dd>
+
+      <dt>
+        Created at
+      </dt>
+      <dd>
+        <%= time_ago_in_words(@the_movie.created_at) %> ago
+      </dd>
+
+      <dt>
+        Updated at
+      </dt>
+      <dd>
+        <%= time_ago_in_words(@the_movie.updated_at) %> ago
+      </dd>
+    </dl>
+  </div>
+</div>
+
+<hr>
+
+
+<div>
+  <div>
+    <h2>
+      Edit movie
+    </h2>
+
+    <form action="/movies/<%= @the_movie.id %>"  method="post" >
+    <input type="text" name="authenticity_token" value="<%= form_authenticity_token %>">
+
+    <input type="hidden" name="_method" value="patch">
+
+      <div>
+        <label for="title_box">
+          Title
+        </label>
+
+        <input type="text" id="title_box" name="query_title" value="<%= @the_movie.title %>">
+      </div>
+
+      <div>
+        <label for="description_box">
+          Description
+        </label>
+
+        <textarea id="description_box" name="query_description"><%= @the_movie.description %></textarea>
+      </div>
+
+      <div>
+        <input type="checkbox" id="released_box" name="query_released" value="1" <%= "checked" if @the_movie.released %>>
+
+        <label for="released_box">
+            Released
+        </label>
+      </div>
+
+      <button>
+        Update movie
+      </button>
+    </form>
+  </div>
+</div>
+
+<hr>

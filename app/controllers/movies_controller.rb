@@ -1,70 +1,70 @@
 class MoviesController < ApplicationController
-  before_action :set_movie, only: %i[ show edit update destroy ]
-
-  # GET /movies or /movies.json
-  def index
-    @movies = Movie.all
-  end
-
-  # GET /movies/1 or /movies/1.json
-  def show
-  end
-
-  # GET /movies/new
   def new
-    @movie = Movie.new
+    render template: "movies/new.html.erb"
   end
-
-  # GET /movies/1/edit
+  
   def edit
+    @the_movie = Movie.where(id: params.fetch(:id)).first
+
+    render template: "movies/edit.html.erb"
   end
 
-  # POST /movies or /movies.json
+  def index
+    matching_movies = Movie.all
+
+    @list_of_movies = matching_movies.order({ :created_at => :desc })
+
+    render
+  end
+
+  def show
+    the_id = params.fetch("id")
+
+    matching_movies = Movie.where({ :id => the_id })
+
+    #@the_movie = matching_movies.at(0)
+    @the_movie = matching_movies[0]
+    @the_movie = matching_movies.first
+
+    render({ :template => "movies/show" })
+  end
+
   def create
-    @movie = Movie.new(movie_params)
+    the_movie = Movie.new
+    the_movie.title = params.fetch("query_title")
+    the_movie.description = params.fetch("query_description")
+    the_movie.released = params.fetch("query_released", false)
 
-    respond_to do |format|
-      if @movie.save
-        format.html { redirect_to movie_url(@movie), notice: "Movie was successfully created." }
-        format.json { render :show, status: :created, location: @movie }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @movie.errors, status: :unprocessable_entity }
-      end
+    if the_movie.valid?
+      the_movie.save
+      redirect_to("/movies", { :notice => "Movie created successfully." })
+    else
+      redirect_to("/movies", { :alert => the_movie.errors.full_messages.to_sentence })
     end
   end
 
-  # PATCH/PUT /movies/1 or /movies/1.json
   def update
-    respond_to do |format|
-      if @movie.update(movie_params)
-        format.html { redirect_to movie_url(@movie), notice: "Movie was successfully updated." }
-        format.json { render :show, status: :ok, location: @movie }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @movie.errors, status: :unprocessable_entity }
-      end
+    the_id = params.fetch("id")
+    the_movie = Movie.where({ :id => the_id }).first
+
+    the_movie.title = params.fetch("query_title")
+    the_movie.description = params.fetch("query_description")
+    the_movie.released = params.fetch("query_released", false)
+
+    if the_movie.valid?
+      the_movie.save
+      redirect_to("/movies/#{the_movie.id}", { :notice => "Movie updated successfully."} )
+    else
+      redirect_to("/movies/#{the_movie.id}", { :alert => the_movie.errors.full_messages.to_sentence })
     end
   end
 
-  # DELETE /movies/1 or /movies/1.json
   def destroy
-    @movie.destroy
+    the_id = params.fetch("id")
+    the_movie = Movie.where({ :id => the_id }).first
 
-    respond_to do |format|
-      format.html { redirect_to movies_url, notice: "Movie was successfully destroyed." }
-      format.json { head :no_content }
-    end
+    the_movie.destroy
+
+    redirect_to("/movies", { :notice => "Movie deleted successfully."} )
   end
-
-  private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_movie
-      @movie = Movie.find(params[:id])
-    end
-
-    # Only allow a list of trusted parameters through.
-    def movie_params
-      params.require(:movie).permit(:title, :description, :released)
-    end
 end
