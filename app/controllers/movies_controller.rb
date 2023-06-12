@@ -41,7 +41,7 @@ class MoviesController < ApplicationController
     else
       cookies[:title] = params.fetch("query_title")
       cookies[:description] = params.fetch("query_description")
-      cookies[:released] = params.fetch("query_release")
+     # cookies[:released] = params.fetch("query_release")
 
       redirect_to("/movies/new", { :alert => the_movie.errors.full_messages.to_sentence })
     end
